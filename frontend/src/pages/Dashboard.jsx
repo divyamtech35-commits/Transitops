@@ -10,25 +10,10 @@ export default function Dashboard() {
   const canViewAnalytics = role === 'FleetManager' || role === 'FinancialAnalyst' || role === 'SafetyOfficer';
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-100">TransitOps</h1>
-            <p className="text-gray-400 mt-1">Logged in as {user?.email}</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="px-3 py-1 bg-[#a35e10]/20 text-[#a35e10] rounded-full text-sm font-medium border border-[#a35e10]/30">
-              {role}
-            </span>
-            <button 
-              onClick={logout}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
-        </header>
+        <h1 className="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
+        <p className="text-gray-400 text-sm mb-8">Access your quick links below.</p>
 
         <main>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

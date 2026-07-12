@@ -21,7 +21,8 @@ const getMaintenanceLogs = async (req, res) => {
     if (vehicle_id) queries.push(Query.equal('vehicleId', vehicle_id));
     if (status) queries.push(Query.equal('status', status));
 
-    // Sort newest first
+    // Sort newest first, with high limit
+    queries.push(Query.limit(100));
     queries.push(Query.orderDesc('$createdAt'));
 
     const response = await db.listDocuments(DB_ID, MAINT_COLL, queries);

@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Vehicles from './pages/Vehicles';
@@ -18,13 +19,15 @@ function App() {
           <Route path="/login" element={<Login />} />
           
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/vehicles" element={<Vehicles />} />
-            <Route path="/drivers" element={<Drivers />} />
-            <Route path="/trips" element={<Trips />} />
-            <Route path="/maintenance" element={<Maintenance />} />
-            <Route path="/fuel-expenses" element={<FuelExpenses />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/vehicles" element={<Vehicles />} />
+              <Route path="/drivers" element={<Drivers />} />
+              <Route path="/trips" element={<Trips />} />
+              <Route path="/maintenance" element={<Maintenance />} />
+              <Route path="/fuel-expenses" element={<FuelExpenses />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

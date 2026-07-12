@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getTrips, createTrip, dispatchTrip, completeTrip, cancelTrip } from '../api/trips';
 import { getVehicles } from '../api/vehicles';
@@ -27,11 +27,18 @@ const Trips = () => {
   // RBAC Flags
   const canManageTrips = role === 'FleetManager' || role === 'Driver';
 
+  // Prevent double fetch on mount
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     fetchInitialData();
   }, []);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     fetchTrips();
   }, [statusFilter]);
 

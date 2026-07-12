@@ -18,7 +18,10 @@ const getTrips = async (req, res) => {
     const db = getDbClient();
     const { status } = req.query;
     
-    const queries = [];
+    const queries = [
+      Query.limit(100),
+      Query.orderDesc('$createdAt')
+    ];
     if (status) queries.push(Query.equal('status', status));
 
     const response = await db.listDocuments(DB_ID, TRIPS_COLL, queries);

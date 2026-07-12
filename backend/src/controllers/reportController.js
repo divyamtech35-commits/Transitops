@@ -1,4 +1,4 @@
-const { Client, Databases } = require('node-appwrite');
+const { Client, Databases, Query } = require('node-appwrite');
 
 const getDbClient = () => {
   const client = new Client()
@@ -14,14 +14,15 @@ const getFleetReport = async (req, res) => {
   try {
     const db = getDbClient();
     
-    // Fetch all needed collections (In production, you would use pagination if documents > 100)
-    // For this prototype, we'll fetch up to 100 of each which is sufficient
+    // Fetch all needed collections (In production, you would use cursor pagination if documents > 500)
+    // For this prototype, we'll fetch up to 500 of each which is sufficient
+    const queryOpts = [Query.limit(500)];
     const [vehiclesRes, tripsRes, fuelRes, maintRes, expRes] = await Promise.all([
-      db.listDocuments(DB_ID, 'vehicles'),
-      db.listDocuments(DB_ID, 'trips'),
-      db.listDocuments(DB_ID, 'fuellogs'),
-      db.listDocuments(DB_ID, 'maintenancelogs'),
-      db.listDocuments(DB_ID, 'expenses')
+      db.listDocuments(DB_ID, 'vehicles', queryOpts),
+      db.listDocuments(DB_ID, 'trips', queryOpts),
+      db.listDocuments(DB_ID, 'fuellogs', queryOpts),
+      db.listDocuments(DB_ID, 'maintenancelogs', queryOpts),
+      db.listDocuments(DB_ID, 'expenses', queryOpts)
     ]);
 
     const vehicles = vehiclesRes.documents;
