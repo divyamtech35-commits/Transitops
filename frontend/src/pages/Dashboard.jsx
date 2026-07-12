@@ -57,6 +57,11 @@ export default function Dashboard() {
                 <p className="text-gray-400">Track vehicle repairs, maintenance costs, and manage shop availability.</p>
               </Link>
             )}
+
+            <Link to="/fuel-expenses" className="bg-[#1a1a1a] border border-gray-800 hover:border-amber-500/50 rounded-xl p-6 col-span-1 md:col-span-2 transition-all group">
+              <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Fuel & Expenses</h2>
+              <p className="text-gray-400">Log fuel consumption, register operational expenses, and calculate total costs.</p>
+            </Link>
             
           </div>
         </main>

@@ -19,8 +19,8 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('jwt');
       if (token) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        // Verify token via a health check or protected route (using /api/protected for now)
-        const res = await api.get('/protected');
+        // Verify token via the backend's me endpoint
+        const res = await api.get('/auth/me');
         setUser(res.data.user);
         setRole(res.data.user.labels?.[0] || 'User');
       }

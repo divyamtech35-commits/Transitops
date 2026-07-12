@@ -56,4 +56,13 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = req.user; // Attached by verifyJWT middleware
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+};
+
+module.exports = { login, getCurrentUser };
