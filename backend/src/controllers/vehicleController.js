@@ -17,7 +17,11 @@ const getVehicles = async (req, res) => {
     const { status, type, region } = req.query;
     
     // Base query: exclude soft-deleted (Retired) vehicles
-    const queries = [Query.notEqual('status', 'Retired')];
+    const queries = [
+      Query.notEqual('status', 'Retired'),
+      Query.limit(100),
+      Query.orderDesc('$createdAt')
+    ];
     
     if (status) queries.push(Query.equal('status', status));
     if (type) queries.push(Query.equal('type', type));

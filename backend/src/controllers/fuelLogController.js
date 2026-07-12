@@ -20,7 +20,8 @@ const getFuelLogs = async (req, res) => {
     const queries = [];
     if (vehicle_id) queries.push(Query.equal('vehicleId', vehicle_id));
     
-    // Sort newest first
+    // Sort newest first with limit
+    queries.push(Query.limit(100));
     queries.push(Query.orderDesc('$createdAt'));
 
     const response = await db.listDocuments(DB_ID, FUEL_COLL, queries);

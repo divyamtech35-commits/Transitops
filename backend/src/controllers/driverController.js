@@ -17,7 +17,11 @@ const getDrivers = async (req, res) => {
     const { status } = req.query;
 
     // Base query: exclude soft-deleted (Removed) drivers
-    const queries = [Query.notEqual('status', 'Removed')];
+    const queries = [
+      Query.notEqual('status', 'Removed'),
+      Query.limit(100),
+      Query.orderDesc('$createdAt')
+    ];
 
     if (status) queries.push(Query.equal('status', status));
 
