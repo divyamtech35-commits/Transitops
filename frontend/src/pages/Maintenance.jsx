@@ -16,6 +16,7 @@ const Maintenance = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('Newest First');
   
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -83,7 +84,7 @@ const Maintenance = () => {
   };
 
   const filteredLogs = useMemo(() => {
-    return logs.filter(log => {
+    let result = logs.filter(log => {
       // Status Filter
       if (statusFilter && log.status !== statusFilter) return false;
       
@@ -97,7 +98,17 @@ const Maintenance = () => {
       }
       return true;
     });
-  }, [logs, statusFilter, searchQuery, vehicles]);
+
+    result.sort((a, b) => {
+      if (sortBy === 'Newest First') return new Date(b.openedAt || b.$createdAt) - new Date(a.openedAt || a.$createdAt);
+      if (sortBy === 'Oldest First') return new Date(a.openedAt || a.$createdAt) - new Date(b.openedAt || b.$createdAt);
+      if (sortBy === 'Cost (High to Low)') return (b.cost || 0) - (a.cost || 0);
+      if (sortBy === 'Cost (Low to High)') return (a.cost || 0) - (b.cost || 0);
+      return 0;
+    });
+
+    return result;
+  }, [logs, statusFilter, searchQuery, sortBy, vehicles]);
 
   if (loading && logs.length === 0) {
     return (
@@ -146,6 +157,20 @@ const Maintenance = () => {
             <option value="">All Statuses</option>
             <option value="Open">In Shop</option>
             <option value="Closed">Completed</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sort By:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 font-semibold focus:outline-none focus:border-amber-600"
+          >
+            <option value="Newest First">Newest First</option>
+            <option value="Oldest First">Oldest First</option>
+            <option value="Cost (High to Low)">Cost (High to Low)</option>
+            <option value="Cost (Low to High)">Cost (Low to High)</option>
           </select>
         </div>
       </div>

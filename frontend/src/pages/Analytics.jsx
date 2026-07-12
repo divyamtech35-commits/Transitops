@@ -117,8 +117,23 @@ const Analytics = () => {
     doc.save(`fleet_report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-400">Loading analytics...</div>;
-  if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-600"></div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm font-semibold">
+          {error}
+        </div>
+      </div>
+    );
+  }
   if (!reportData) return null;
 
   const { aggregate, vehicles } = reportData;
@@ -144,22 +159,22 @@ const Analytics = () => {
   ].filter(d => d.value > 0);
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Reports & Analytics</h1>
-          <p className="text-gray-400 text-sm">Analyze fleet performance, utilization, and financial ROI.</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Reports & Analytics</h1>
+          <p className="text-slate-500 text-sm mt-1">Analyze fleet performance, utilization, and financial ROI.</p>
         </div>
         <div className="flex gap-3">
           <button 
             onClick={exportCSV}
-            className="bg-[#1a1a1a] border border-gray-700 hover:border-gray-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-all shadow-sm text-xs"
           >
             Export CSV
           </button>
           <button 
             onClick={exportPDF}
-            className="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-lg shadow-amber-900/20"
+            className="bg-[#eab308] hover:bg-[#ca8a04] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-md shadow-amber-500/20 text-xs"
           >
             Export PDF
           </button>
@@ -167,45 +182,45 @@ const Analytics = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Fleet Utilization</h3>
-          <p className="text-3xl font-bold text-white">{aggregate.fleetUtilization}%</p>
-          <p className="text-gray-500 text-sm mt-1">{aggregate.activeVehicles} / {aggregate.totalVehicles} Active</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Fleet Utilization</h3>
+          <p className="text-3xl font-extrabold text-slate-900">{aggregate.fleetUtilization}%</p>
+          <p className="text-slate-500 text-xs mt-1.5 font-semibold">{aggregate.activeVehicles} / {aggregate.totalVehicles} Active</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Overall ROI</h3>
-          <p className={`text-3xl font-bold ${aggregate.overallROIPercentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Overall ROI</h3>
+          <p className={`text-3xl font-extrabold ${aggregate.overallROIPercentage >= 0 ? 'text-green-600' : 'text-red-500'}`}>
             {aggregate.overallROIPercentage}%
           </p>
-          <p className="text-gray-500 text-sm mt-1">Based on acquisition cost</p>
+          <p className="text-slate-500 text-xs mt-1.5 font-semibold">Based on acquisition cost</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Fuel Efficiency</h3>
-          <p className="text-3xl font-bold text-white">{aggregate.overallFuelEfficiency}</p>
-          <p className="text-gray-500 text-sm mt-1">Average km / Liter</p>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Fuel Efficiency</h3>
+          <p className="text-3xl font-extrabold text-slate-900">{aggregate.overallFuelEfficiency}</p>
+          <p className="text-slate-500 text-xs mt-1.5 font-semibold">Average km / Liter</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
-          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Op Cost</h3>
-          <p className="text-3xl font-bold text-amber-500">₹{aggregate.totalOperationalCost.toLocaleString()}</p>
-          <p className="text-gray-500 text-sm mt-1">Fuel + Maintenance</p>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Op Cost</h3>
+          <p className="text-3xl font-extrabold text-amber-600">₹{aggregate.totalOperationalCost.toLocaleString()}</p>
+          <p className="text-slate-500 text-xs mt-1.5 font-semibold">Fuel + Maintenance</p>
         </div>
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Revenue vs Op Cost */}
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
-          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Revenue vs Op Cost (Top 10)</h3>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+          <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Revenue vs Op Cost (Top 10)</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={financialData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
-                <Tooltip cursor={{fill: '#1a1a1a'}} contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} fontWeight="bold" />
+                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} fontWeight="bold" />
+                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#1e293b', fontWeight: 'bold' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }} />
                 <Bar dataKey="Revenue" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
                 <Bar dataKey="OpCost" name="Operational Cost" fill="#f59e0b" radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
@@ -214,8 +229,8 @@ const Analytics = () => {
         </div>
 
         {/* Fleet Status Distribution */}
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
-          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Fleet Status Distribution</h3>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+          <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Fleet Status Distribution</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -227,35 +242,36 @@ const Analytics = () => {
                   outerRadius={100}
                   paddingAngle={5}
                   dataKey="value"
+                  stroke="none"
                 >
                   {utilizationData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#1e293b', fontWeight: 'bold' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Fuel Efficiency by Vehicle */}
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl lg:col-span-2">
-          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Fuel Efficiency by Vehicle (km/L)</h3>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm lg:col-span-2">
+          <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Fuel Efficiency by Vehicle (km/L)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={efficiencyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
-                <Area type="monotone" dataKey="Efficiency" stroke="#3b82f6" fillOpacity={1} fill="url(#colorEff)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} fontWeight="bold" />
+                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} fontWeight="bold" />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#1e293b', fontWeight: 'bold' }} />
+                <Area type="monotone" dataKey="Efficiency" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorEff)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -265,39 +281,39 @@ const Analytics = () => {
 
       {/* Detailed Data Table */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">Vehicle Performance Breakdown</h2>
-        <div className="bg-[#121212] rounded-xl border border-gray-800 overflow-hidden">
+        <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Vehicle Performance Breakdown</h2>
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-300">
-              <thead className="text-xs uppercase bg-[#1a1a1a] text-gray-400 border-b border-gray-800">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="border-b border-slate-200 bg-slate-50 text-slate-400 font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Vehicle</th>
-                  <th className="px-6 py-4 font-medium">Distance (km)</th>
-                  <th className="px-6 py-4 font-medium">Fuel Eff.</th>
-                  <th className="px-6 py-4 font-medium">Revenue</th>
-                  <th className="px-6 py-4 font-medium">Op Cost</th>
-                  <th className="px-6 py-4 font-medium">ROI %</th>
+                  <th className="px-6 py-4 font-semibold">Vehicle</th>
+                  <th className="px-6 py-4 font-semibold">Distance (km)</th>
+                  <th className="px-6 py-4 font-semibold">Fuel Eff.</th>
+                  <th className="px-6 py-4 font-semibold">Revenue</th>
+                  <th className="px-6 py-4 font-semibold">Op Cost</th>
+                  <th className="px-6 py-4 font-semibold">ROI %</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
+              <tbody className="divide-y divide-slate-100 font-medium">
                 {vehicles.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">No fleet data available.</td>
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-bold text-sm">No fleet data available.</td>
                   </tr>
                 ) : (
                   vehicles.map((v) => {
                     const opCost = v.fuelCost + v.maintenanceCost;
                     return (
-                      <tr key={v.vehicleId} className="hover:bg-[#1a1a1a] transition-colors">
+                      <tr key={v.vehicleId} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-6 py-4">
-                          <p className="text-white font-medium">{v.registrationNumber}</p>
-                          <p className="text-xs text-gray-500">{v.model}</p>
+                          <p className="text-slate-900 font-bold">{v.registrationNumber}</p>
+                          <p className="text-xs text-slate-500 font-semibold">{v.model}</p>
                         </td>
                         <td className="px-6 py-4">{v.distance}</td>
                         <td className="px-6 py-4">{v.fuelEfficiency} km/L</td>
-                        <td className="px-6 py-4 text-green-400">₹{v.revenue.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-amber-500">₹{opCost.toLocaleString()}</td>
-                        <td className={`px-6 py-4 font-medium ${v.roiPercentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <td className="px-6 py-4 font-bold text-green-600">₹{v.revenue.toLocaleString()}</td>
+                        <td className="px-6 py-4 font-bold text-amber-600">₹{opCost.toLocaleString()}</td>
+                        <td className={`px-6 py-4 font-bold ${v.roiPercentage >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                           {v.roiPercentage}%
                         </td>
                       </tr>

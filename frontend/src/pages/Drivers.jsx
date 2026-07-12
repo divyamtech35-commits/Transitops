@@ -18,6 +18,8 @@ export default function Drivers() {
   // Search & Filters
   const [searchDriverQuery, setSearchDriverQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [sortBy, setSortBy] = useState('None');
 
   // RBAC Flags
   const cleanRole = role ? role.replace(/\s+/g, '') : 'Driver';
@@ -121,11 +123,14 @@ export default function Drivers() {
 
   // Filter and Search logic
   const filteredDrivers = useMemo(() => {
-    return drivers.filter(d => {
+    let result = drivers.filter(d => {
       // 1. Status toggle filter
       if (statusFilter !== 'All' && d.status !== statusFilter) return false;
 
-      // 2. Search query
+      // 2. Category filter
+      if (categoryFilter !== 'All' && formatCategory(d.licenseCategory) !== categoryFilter) return false;
+
+      // 3. Search query
       if (searchDriverQuery) {
         const query = searchDriverQuery.toLowerCase();
         if (!d.name.toLowerCase().includes(query) && !d.licenseNumber.toLowerCase().includes(query)) return false;
@@ -133,7 +138,22 @@ export default function Drivers() {
 
       return true;
     });
-  }, [drivers, statusFilter, searchDriverQuery]);
+
+    // Sort logic
+    if (sortBy !== 'None') {
+      result.sort((a, b) => {
+        if (sortBy === 'Name A-Z') return a.name.localeCompare(b.name);
+        if (sortBy === 'Name Z-A') return b.name.localeCompare(a.name);
+        
+        const getSafetyNum = (d) => parseFloat(d.safetyScore) || 5.0;
+        if (sortBy === 'Safety Score (High to Low)') return getSafetyNum(b) - getSafetyNum(a);
+        if (sortBy === 'Safety Score (Low to High)') return getSafetyNum(a) - getSafetyNum(b);
+        return 0;
+      });
+    }
+
+    return result;
+  }, [drivers, statusFilter, categoryFilter, searchDriverQuery, sortBy]);
 
   // Initials for avatar
   const userInitials = useMemo(() => {
@@ -200,8 +220,40 @@ export default function Drivers() {
         </div>
       )}
 
-      {/* ACTION ROW */}
-      <div className="flex justify-end">
+      {/* FILTER & ACTION ROW */}
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Category dropdown */}
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm text-xs font-semibold">
+            <span className="text-slate-400 font-bold">Category:</span>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="bg-transparent text-slate-800 focus:outline-none cursor-pointer font-bold"
+            >
+              <option value="All">All</option>
+              <option value="LMV">LMV</option>
+              <option value="HMV">HMV</option>
+            </select>
+          </div>
+
+          {/* Sort dropdown */}
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm text-xs font-semibold">
+            <span className="text-slate-400 font-bold">Sort By:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent text-slate-800 focus:outline-none cursor-pointer font-bold"
+            >
+              <option value="None">None</option>
+              <option value="Name A-Z">Name A-Z</option>
+              <option value="Name Z-A">Name Z-A</option>
+              <option value="Safety Score (High to Low)">Safety (High to Low)</option>
+              <option value="Safety Score (Low to High)">Safety (Low to High)</option>
+            </select>
+          </div>
+        </div>
+
         {canManageDrivers && (
           <button 
             onClick={handleAddClick}

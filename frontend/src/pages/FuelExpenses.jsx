@@ -20,6 +20,8 @@ const FuelExpenses = () => {
   const [error, setError] = useState('');
   
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortByFuel, setSortByFuel] = useState('Date Newest');
+  const [sortByExpense, setSortByExpense] = useState('Total Cost (High-Low)');
   
   const [isFuelModalOpen, setIsFuelModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -152,19 +154,44 @@ const FuelExpenses = () => {
   }, [expenses, trips, vehicles, maintenance]);
 
   const filteredFuelLogs = useMemo(() => {
-    if (!searchQuery) return fuelLogs;
-    const q = searchQuery.toLowerCase();
-    return fuelLogs.filter(log => getVehicleInfo(log.vehicleId).toLowerCase().includes(q));
-  }, [fuelLogs, searchQuery, vehicles]);
+    let result = fuelLogs;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = fuelLogs.filter(log => getVehicleInfo(log.vehicleId).toLowerCase().includes(q));
+    }
+    
+    // Make a copy to sort
+    result = [...result];
+    result.sort((a, b) => {
+      if (sortByFuel === 'Date Newest') return new Date(b.date) - new Date(a.date);
+      if (sortByFuel === 'Date Oldest') return new Date(a.date) - new Date(b.date);
+      if (sortByFuel === 'Cost (High-Low)') return (b.cost || 0) - (a.cost || 0);
+      if (sortByFuel === 'Cost (Low-High)') return (a.cost || 0) - (b.cost || 0);
+      return 0;
+    });
+    return result;
+  }, [fuelLogs, searchQuery, sortByFuel, vehicles]);
 
   const filteredExpensesRows = useMemo(() => {
-    if (!searchQuery) return expensesTableData;
-    const q = searchQuery.toLowerCase();
-    return expensesTableData.filter(row => 
-      getVehicleInfo(row.vehicleId).toLowerCase().includes(q) || 
-      getTripInfo(row.tripId).toLowerCase().includes(q)
-    );
-  }, [expensesTableData, searchQuery, vehicles, trips]);
+    let result = expensesTableData;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = expensesTableData.filter(row => 
+        getVehicleInfo(row.vehicleId).toLowerCase().includes(q) || 
+        getTripInfo(row.tripId).toLowerCase().includes(q)
+      );
+    }
+    
+    result = [...result];
+    result.sort((a, b) => {
+      if (sortByExpense === 'Total Cost (High-Low)') return (b.total || 0) - (a.total || 0);
+      if (sortByExpense === 'Total Cost (Low-High)') return (a.total || 0) - (b.total || 0);
+      if (sortByExpense === 'Tolls (High-Low)') return (b.toll || 0) - (a.toll || 0);
+      if (sortByExpense === 'Maint (High-Low)') return (b.maint || 0) - (a.maint || 0);
+      return 0;
+    });
+    return result;
+  }, [expensesTableData, searchQuery, sortByExpense, vehicles, trips]);
 
   const totalFuelCost = fuelLogs.reduce((sum, l) => sum + l.cost, 0);
   const totalMaintCost = maintenance.filter(m => m.status === 'Closed').reduce((sum, m) => sum + (m.cost || 0), 0);
@@ -225,7 +252,19 @@ const FuelExpenses = () => {
         
         {/* FUEL LOGS */}
         <div>
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Fuel Refill Logs</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Fuel Refill Logs</h3>
+            <select
+              value={sortByFuel}
+              onChange={(e) => setSortByFuel(e.target.value)}
+              className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-500 focus:outline-none"
+            >
+              <option value="Date Newest">Date Newest</option>
+              <option value="Date Oldest">Date Oldest</option>
+              <option value="Cost (High-Low)">Cost (High-Low)</option>
+              <option value="Cost (Low-High)">Cost (Low-High)</option>
+            </select>
+          </div>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
@@ -263,7 +302,19 @@ const FuelExpenses = () => {
         {/* OTHER EXPENSES */}
         {canAddExpense && (
           <div>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Tolls & Operations Expenses</h3>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tolls & Operations Expenses</h3>
+              <select
+                value={sortByExpense}
+                onChange={(e) => setSortByExpense(e.target.value)}
+                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-500 focus:outline-none"
+              >
+                <option value="Total Cost (High-Low)">Total Cost (High-Low)</option>
+                <option value="Total Cost (Low-High)">Total Cost (Low-High)</option>
+                <option value="Tolls (High-Low)">Tolls (High-Low)</option>
+                <option value="Maint (High-Low)">Maint (High-Low)</option>
+              </select>
+            </div>
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">

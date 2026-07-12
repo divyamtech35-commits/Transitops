@@ -17,6 +17,7 @@ export default function Vehicles() {
   const [searchRegQuery, setSearchRegQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [sortBy, setSortBy] = useState('None');
 
   // RBAC Flags
   const cleanRole = role ? role.replace(/\s+/g, '') : 'Driver';
@@ -77,7 +78,7 @@ export default function Vehicles() {
 
   // Filter and Search logic
   const filteredVehicles = useMemo(() => {
-    return vehicles.filter(v => {
+    let result = vehicles.filter(v => {
       // 1. Type Filter
       if (typeFilter !== 'All' && v.type !== typeFilter) return false;
 
@@ -92,7 +93,21 @@ export default function Vehicles() {
 
       return true;
     });
-  }, [vehicles, typeFilter, statusFilter, searchRegQuery]);
+
+    // Sort logic
+    if (sortBy !== 'None') {
+      result.sort((a, b) => {
+        if (sortBy === 'Acquisition Cost (High to Low)') return (b.acquisitionCost || 0) - (a.acquisitionCost || 0);
+        if (sortBy === 'Acquisition Cost (Low to High)') return (a.acquisitionCost || 0) - (b.acquisitionCost || 0);
+        if (sortBy === 'Odometer (High to Low)') return (b.odometer || 0) - (a.odometer || 0);
+        if (sortBy === 'Odometer (Low to High)') return (a.odometer || 0) - (b.odometer || 0);
+        if (sortBy === 'Capacity (High to Low)') return (parseFloat(b.maxLoad) || 0) - (parseFloat(a.maxLoad) || 0);
+        return 0;
+      });
+    }
+
+    return result;
+  }, [vehicles, typeFilter, statusFilter, searchRegQuery, sortBy]);
 
   // Initials for avatar
   const userInitials = useMemo(() => {
@@ -200,6 +215,23 @@ export default function Vehicles() {
               <option value="On Trip">On Trip</option>
               <option value="In Shop">In Shop</option>
               <option value="Retired">Retired</option>
+            </select>
+          </div>
+
+          {/* Sort dropdown */}
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm text-xs font-semibold">
+            <span className="text-slate-400 font-bold">Sort By:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent text-slate-800 focus:outline-none cursor-pointer font-bold"
+            >
+              <option value="None">None</option>
+              <option value="Acquisition Cost (High to Low)">Cost (High to Low)</option>
+              <option value="Acquisition Cost (Low to High)">Cost (Low to High)</option>
+              <option value="Odometer (High to Low)">Odometer (High to Low)</option>
+              <option value="Odometer (Low to High)">Odometer (Low to High)</option>
+              <option value="Capacity (High to Low)">Capacity (High to Low)</option>
             </select>
           </div>
 

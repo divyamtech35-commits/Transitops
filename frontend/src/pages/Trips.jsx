@@ -6,7 +6,7 @@ import { getDrivers } from '../api/drivers';
 import CompleteTripModal from '../components/CompleteTripModal';
 
 export default function Trips() {
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -17,6 +17,11 @@ export default function Trips() {
   
   // Selected Trip for Left panel lifecycle/actions
   const [selectedTrip, setSelectedTrip] = useState(null);
+
+  // Filters & Search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [sortBy, setSortBy] = useState('None');
 
   // Form states for creating trip
   const [source, setSource] = useState('');
@@ -186,22 +191,82 @@ export default function Trips() {
     return 'US';
   }, [user]);
 
+  // Filter and Sort Trips
+  const filteredTrips = useMemo(() => {
+    let result = trips.filter(t => {
+      if (statusFilter !== 'All' && t.status !== statusFilter) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const vReg = getVehicleReg(t.vehicleId).toLowerCase();
+        const dName = getDriverName(t.driverId).toLowerCase();
+        if (
+          !t.source.toLowerCase().includes(q) &&
+          !t.destination.toLowerCase().includes(q) &&
+          !vReg.includes(q) &&
+          !dName.includes(q)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    if (sortBy !== 'None') {
+      result.sort((a, b) => {
+        if (sortBy === 'Distance (High to Low)') return (parseFloat(b.distance) || 0) - (parseFloat(a.distance) || 0);
+        if (sortBy === 'Distance (Low to High)') return (parseFloat(a.distance) || 0) - (parseFloat(b.distance) || 0);
+        if (sortBy === 'Cargo (High to Low)') return (parseFloat(b.cargoWeight) || 0) - (parseFloat(a.cargoWeight) || 0);
+        if (sortBy === 'Cargo (Low to High)') return (parseFloat(a.cargoWeight) || 0) - (parseFloat(b.cargoWeight) || 0);
+        return 0;
+      });
+    }
+    return result;
+  }, [trips, statusFilter, searchQuery, sortBy, vehicles, drivers]);
+
   const displayRole = cleanRole === 'FleetManager' ? 'Fleet Manager' : cleanRole === 'Driver' ? 'Dispatcher' : role;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       
       {/* TOP BAR: Search & Profile */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-        <div className="relative w-full max-w-sm">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 pl-10 focus:outline-none focus:border-amber-500 focus:bg-white text-slate-800 text-xs font-semibold"
-          />
-          <svg className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search source, dest, driver..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 pl-9 focus:outline-none focus:border-amber-500 focus:bg-white text-slate-800 text-xs font-semibold"
+            />
+            <svg className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500"
+          >
+            <option value="All">All Status</option>
+            <option value="Draft">Draft</option>
+            <option value="Dispatched">Dispatched</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500"
+          >
+            <option value="None">Sort By...</option>
+            <option value="Distance (High to Low)">Dist (High to Low)</option>
+            <option value="Distance (Low to High)">Dist (Low to High)</option>
+            <option value="Cargo (High to Low)">Cargo (High to Low)</option>
+            <option value="Cargo (Low to High)">Cargo (Low to High)</option>
+          </select>
         </div>
 
         <div className="flex items-center gap-3 self-end sm:self-auto">
@@ -490,12 +555,12 @@ export default function Trips() {
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Live Board</h3>
           
           <div className="space-y-4">
-            {trips.length === 0 ? (
+            {filteredTrips.length === 0 ? (
               <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-400 shadow-sm font-medium">
-                No active trip records found. Create one on the left!
+                No trip records found matching your filters.
               </div>
             ) : (
-              trips.map((t) => {
+              filteredTrips.map((t) => {
                 const isSelected = selectedTrip?.$id === t.$id;
                 const statusBadge = t.status === 'On Trip' ? 'bg-blue-500 text-white' :
                                     t.status === 'Completed' ? 'bg-green-600 text-white' :
@@ -535,7 +600,7 @@ export default function Trips() {
                       <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold ${statusBadge}`}>
                         {t.status}
                       </span>
-                      <span className="text-xs text-slate-500 font-semibold">{detailsText}</span>
+                      <span className="w-32 text-right text-xs text-slate-500 font-semibold truncate">{detailsText}</span>
                     </div>
                   </div>
                 );

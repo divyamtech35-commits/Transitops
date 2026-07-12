@@ -29,6 +29,7 @@ export default function Layout({ children }) {
     { label: 'Trips & Dispatch', path: '/trips', roles: ['FleetManager', 'Driver'] },
     { label: 'Maintenance Logs', path: '/maintenance', roles: ['FleetManager', 'FinancialAnalyst'] },
     { label: 'Fuel & Expenses', path: '/fuel-expenses', roles: ['FleetManager', 'Driver', 'FinancialAnalyst'] },
+    { label: 'Reports & Analytics', path: '/analytics', roles: ['FleetManager', 'FinancialAnalyst'] },
   ];
 
   // Filter items based on normalized role
