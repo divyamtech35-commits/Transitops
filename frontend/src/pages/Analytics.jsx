@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getFleetReport } from '../api/reports';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from 'recharts';
+
+const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
 
 const Analytics = () => {
   const [reportData, setReportData] = useState(null);
@@ -31,10 +34,8 @@ const Analytics = () => {
     if (!reportData) return;
     const { vehicles } = reportData;
     
-    // Define headers
     const headers = ['Vehicle ID', 'Registration', 'Model', 'Status', 'Distance (km)', 'Fuel (L)', 'Fuel Eff (km/L)', 'Revenue', 'Fuel Cost', 'Maint Cost', 'Op Cost', 'ROI %'];
     
-    // Map rows
     const rows = vehicles.map(v => [
       v.vehicleId,
       v.registrationNumber,
@@ -79,8 +80,7 @@ const Analytics = () => {
     
     const { aggregate, vehicles } = reportData;
     
-    // Top Level Summary Table
-    doc.autoTable({
+    autoTable(doc, {
       startY: 35,
       head: [['Total Vehicles', 'Active', 'Utilization %', 'Total Revenue', 'Op Cost', 'ROI %']],
       body: [[
@@ -92,10 +92,9 @@ const Analytics = () => {
         `${aggregate.overallROIPercentage}%`
       ]],
       theme: 'grid',
-      headStyles: { fillColor: [245, 158, 11] } // amber-500
+      headStyles: { fillColor: [245, 158, 11] }
     });
     
-    // Vehicle Breakdown Table
     const tableRows = vehicles.map(v => [
       v.registrationNumber,
       v.model,
@@ -107,12 +106,12 @@ const Analytics = () => {
       `${v.roiPercentage}%`
     ]);
     
-    doc.autoTable({
+    autoTable(doc, {
       startY: doc.lastAutoTable.finalY + 15,
       head: [['Registration', 'Model', 'Status', 'Distance (km)', 'Fuel Eff.', 'Revenue', 'Op Cost', 'ROI %']],
       body: tableRows,
       theme: 'striped',
-      headStyles: { fillColor: [31, 41, 55] } // gray-800
+      headStyles: { fillColor: [31, 41, 55] }
     });
     
     doc.save(`fleet_report_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -124,12 +123,25 @@ const Analytics = () => {
 
   const { aggregate, vehicles } = reportData;
 
-  // Chart Data preparation
-  const chartData = vehicles.slice(0, 10).map(v => ({
+  const top10Vehicles = vehicles.slice(0, 10);
+  
+  const financialData = top10Vehicles.map(v => ({
     name: v.registrationNumber,
     Revenue: v.revenue,
     OpCost: v.fuelCost + v.maintenanceCost
   }));
+
+  const efficiencyData = top10Vehicles.map(v => ({
+    name: v.registrationNumber,
+    Efficiency: v.fuelEfficiency
+  }));
+
+  const utilizationData = [
+    { name: 'Active (On Trip)', value: aggregate.activeVehicles },
+    { name: 'Available / Idle', value: vehicles.filter(v => v.status === 'Available').length },
+    { name: 'In Shop', value: vehicles.filter(v => v.status === 'In Shop').length },
+    { name: 'Retired', value: vehicles.filter(v => v.status === 'Retired').length }
+  ].filter(d => d.value > 0);
 
   return (
     <div className="p-8">
@@ -156,49 +168,99 @@ const Analytics = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
           <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Fleet Utilization</h3>
           <p className="text-3xl font-bold text-white">{aggregate.fleetUtilization}%</p>
           <p className="text-gray-500 text-sm mt-1">{aggregate.activeVehicles} / {aggregate.totalVehicles} Active</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
           <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Overall ROI</h3>
           <p className={`text-3xl font-bold ${aggregate.overallROIPercentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
             {aggregate.overallROIPercentage}%
           </p>
           <p className="text-gray-500 text-sm mt-1">Based on acquisition cost</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
           <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Fuel Efficiency</h3>
           <p className="text-3xl font-bold text-white">{aggregate.overallFuelEfficiency}</p>
           <p className="text-gray-500 text-sm mt-1">Average km / Liter</p>
         </div>
-        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl hover:border-amber-500/50 transition-colors">
           <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Op Cost</h3>
           <p className="text-3xl font-bold text-amber-500">₹{aggregate.totalOperationalCost.toLocaleString()}</p>
           <p className="text-gray-500 text-sm mt-1">Fuel + Maintenance</p>
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl mb-8">
-        <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Revenue vs Operational Cost (Top 10 Vehicles)</h3>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-              <XAxis dataKey="name" stroke="#888" />
-              <YAxis stroke="#888" />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333' }}
-                itemStyle={{ color: '#fff' }}
-              />
-              <Legend />
-              <Bar dataKey="Revenue" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="OpCost" name="Operational Cost" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        
+        {/* Revenue vs Op Cost */}
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Revenue vs Op Cost (Top 10)</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={financialData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value/1000}k`} />
+                <Tooltip cursor={{fill: '#1a1a1a'}} contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                <Bar dataKey="Revenue" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="OpCost" name="Operational Cost" fill="#f59e0b" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
+
+        {/* Fleet Status Distribution */}
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl">
+          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Fleet Status Distribution</h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={utilizationData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {utilizationData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Fuel Efficiency by Vehicle */}
+        <div className="bg-[#121212] border border-gray-800 p-6 rounded-xl lg:col-span-2">
+          <h3 className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-6">Fuel Efficiency by Vehicle (km/L)</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={efficiencyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', borderColor: '#333', borderRadius: '8px' }} itemStyle={{ color: '#fff' }} />
+                <Area type="monotone" dataKey="Efficiency" stroke="#3b82f6" fillOpacity={1} fill="url(#colorEff)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
       </div>
 
       {/* Detailed Data Table */}
