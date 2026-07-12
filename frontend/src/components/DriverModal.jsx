@@ -17,7 +17,6 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
         name: driver.name || '',
         licenseNumber: driver.licenseNumber || '',
         licenseCategory: driver.licenseCategory || 'Standard',
-        // Appwrite returns datetime string, extract just the YYYY-MM-DD part for input type date
         licenseExpiryDate: driver.licenseExpiryDate ? driver.licenseExpiryDate.substring(0, 10) : '',
         contactNumber: driver.contactNumber || '',
         safetyScore: driver.safetyScore || 5.0,
@@ -51,32 +50,39 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
     onSave({
       ...formData,
       safetyScore: parseFloat(formData.safetyScore),
-      // Append time to date to make it a valid ISO datetime for Appwrite
       licenseExpiryDate: `${formData.licenseExpiryDate}T00:00:00.000Z`
     });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 overflow-y-auto pt-20 pb-10">
-      <div className="bg-[#121212] border border-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-6 m-4 mt-auto mb-auto">
-        <h2 className="text-2xl font-semibold mb-6 text-white">{driver ? 'Edit Driver' : 'Add New Driver'}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-6">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800">{driver ? 'Edit Driver' : 'Register New Driver'}</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Full Name</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Full Name</label>
             <input
               required
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              placeholder="e.g. Alex Fernandes"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">License Number</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">License Number</label>
               <input
                 required
                 type="text"
@@ -84,16 +90,17 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
                 value={formData.licenseNumber}
                 onChange={handleChange}
                 disabled={!!driver} 
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+                placeholder="e.g. DL-1234567"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium disabled:opacity-50"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Category</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Category</label>
               <select
                 name="licenseCategory"
                 value={formData.licenseCategory}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
               >
                 <option value="Standard">Standard</option>
                 <option value="Commercial">Commercial</option>
@@ -104,32 +111,33 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Expiry Date</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Expiry Date</label>
               <input
                 required
                 type="date"
                 name="licenseExpiryDate"
                 value={formData.licenseExpiryDate}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Contact Number</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Contact Number</label>
               <input
                 required
                 type="text"
                 name="contactNumber"
                 value={formData.contactNumber}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. +91 98765 43210"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Safety Score (1-5)</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Safety Score (1-5)</label>
               <input
                 required
                 type="number"
@@ -139,16 +147,17 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
                 min="1"
                 max="5"
                 step="0.1"
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="5.0"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Status</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Status</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
               >
                 <option value="Available">Available</option>
                 <option value="On Trip">On Trip</option>
@@ -158,17 +167,17 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+              className="px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-bold transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-amber-600 text-white hover:bg-amber-500 transition-colors"
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md shadow-amber-500/10"
             >
               {driver ? 'Update Driver' : 'Save Driver'}
             </button>

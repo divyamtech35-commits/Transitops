@@ -23,7 +23,8 @@ const Maintenance = () => {
   const [selectedLog, setSelectedLog] = useState(null);
 
   // RBAC Flags
-  const canManageLogs = role === 'FleetManager';
+  const cleanRole = role ? role.replace(/\s+/g, '') : 'Driver';
+  const canManageLogs = cleanRole === 'FleetManager';
 
   useEffect(() => {
     fetchInitialData();
@@ -36,8 +37,8 @@ const Maintenance = () => {
         getVehicles(),
         getMaintenanceLogs()
       ]);
-      setVehicles(vehData.documents);
-      setLogs(logData.documents);
+      setVehicles(vehData.documents || []);
+      setLogs(logData.documents || []);
     } catch (err) {
       setError('Failed to fetch maintenance data');
     } finally {
@@ -48,8 +49,8 @@ const Maintenance = () => {
   const refreshData = async () => {
     try {
       const [vehData, logData] = await Promise.all([getVehicles(), getMaintenanceLogs()]);
-      setVehicles(vehData.documents);
-      setLogs(logData.documents);
+      setVehicles(vehData.documents || []);
+      setLogs(logData.documents || []);
     } catch (err) {
       console.error('Failed to refresh data:', err);
     }
@@ -98,91 +99,107 @@ const Maintenance = () => {
     });
   }, [logs, statusFilter, searchQuery, vehicles]);
 
+  if (loading && logs.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Maintenance Logs</h1>
-          <p className="text-gray-400 text-sm">Track vehicle repairs, costs, and availability status.</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Maintenance Logs</h1>
+          <p className="text-slate-500 text-sm mt-1">Track vehicle repairs, costs, and availability status.</p>
         </div>
         {canManageLogs && (
           <button 
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-lg shadow-amber-900/20"
+            className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition-all shadow-amber-500/10"
           >
-            + New Maintenance Log
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
+            New Maintenance Log
           </button>
         )}
       </div>
 
       {/* Filters & Search */}
-      <div className="mb-6 flex gap-4">
+      <div className="flex flex-wrap gap-4 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
         <input
           type="text"
           placeholder="Search by vehicle or description..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-[#1a1a1a] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500 w-full max-w-md"
+          className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-700 font-medium focus:outline-none focus:border-amber-600 w-full max-w-md"
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-[#1a1a1a] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500 min-w-[150px]"
-        >
-          <option value="">All Statuses</option>
-          <option value="Open">In Shop</option>
-          <option value="Closed">Completed</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Status:</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700 font-semibold focus:outline-none focus:border-amber-600"
+          >
+            <option value="">All Statuses</option>
+            <option value="Open">In Shop</option>
+            <option value="Closed">Completed</option>
+          </select>
+        </div>
       </div>
 
-      <div className="bg-[#121212] rounded-xl border border-gray-800 overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading maintenance logs...</div>
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-300">
-              <thead className="text-xs uppercase bg-[#1a1a1a] text-gray-400 border-b border-gray-800">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm font-semibold">
+          {error}
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
+                <th className="px-6 py-4 font-semibold">Vehicle</th>
+                <th className="px-6 py-4 font-semibold">Description</th>
+                <th className="px-6 py-4 font-semibold">Dates</th>
+                <th className="px-6 py-4 font-semibold">Status & Cost</th>
+                {canManageLogs && <th className="px-6 py-4 text-right font-semibold">Actions</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-slate-700 font-medium">
+              {filteredLogs.length === 0 ? (
                 <tr>
-                  <th className="px-6 py-4 font-medium">Vehicle</th>
-                  <th className="px-6 py-4 font-medium">Description</th>
-                  <th className="px-6 py-4 font-medium">Dates</th>
-                  <th className="px-6 py-4 font-medium">Status & Cost</th>
-                  {canManageLogs && <th className="px-6 py-4 text-right font-medium">Actions</th>}
+                  <td colSpan="5" className="px-6 py-12 text-center text-slate-400 font-bold text-sm">
+                    No maintenance records found.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {filteredLogs.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                      No maintenance records found.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredLogs.map((log) => (
-                    <tr key={log.$id} className="hover:bg-[#1a1a1a] transition-colors">
-                      <td className="px-6 py-4 font-medium text-white">
+              ) : (
+                filteredLogs.map((log) => {
+                  const statusBadgeColor = log.status === 'Open' ? 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse' :
+                                           'bg-slate-100 text-slate-700 border-slate-200';
+
+                  return (
+                    <tr key={log.$id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 font-bold text-slate-900">
                         {getVehicleInfo(log.vehicleId).text}
                       </td>
                       <td className="px-6 py-4 max-w-xs truncate" title={log.description}>
                         {log.description}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-gray-300">Opened: {new Date(log.openedAt || log.$createdAt).toLocaleDateString()}</div>
-                        {log.closedAt && <div className="text-gray-500 text-xs mt-1">Closed: {new Date(log.closedAt).toLocaleDateString()}</div>}
+                        <div className="text-slate-800 font-semibold">Opened: {new Date(log.openedAt || log.$createdAt).toLocaleDateString()}</div>
+                        {log.closedAt && <div className="text-slate-400 text-[10px] mt-0.5 font-semibold uppercase tracking-wider">Closed: {new Date(log.closedAt).toLocaleDateString()}</div>}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="mb-2">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium 
-                            ${log.status === 'Open' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
-                              'bg-gray-500/10 text-gray-400 border border-gray-500/20'}`}
-                          >
+                      <td className="px-6 py-4 space-y-1.5">
+                        <div>
+                          <span className={`px-2.5 py-0.5 rounded text-[10px] font-semibold border ${statusBadgeColor}`}>
                             {log.status === 'Open' ? 'In Shop' : 'Completed'}
                           </span>
                         </div>
                         {log.status === 'Closed' && (
-                          <div className="text-green-400 font-medium">₹{log.cost?.toFixed(2)}</div>
+                          <div className="text-green-600 font-bold">${log.cost?.toFixed(2)}</div>
                         )}
                       </td>
                       {canManageLogs && (
@@ -190,7 +207,7 @@ const Maintenance = () => {
                           {log.status === 'Open' && (
                             <button 
                               onClick={() => openCloseModal(log)} 
-                              className="bg-amber-500/10 border border-amber-500/50 text-amber-500 hover:bg-amber-500 hover:text-white px-4 py-1.5 rounded-lg text-sm transition-all"
+                              className="px-4 py-2 border border-amber-600/50 hover:bg-amber-600 text-amber-650 hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-amber-500/5"
                             >
                               Finish Repair
                             </button>
@@ -198,12 +215,12 @@ const Maintenance = () => {
                         </td>
                       )}
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <MaintenanceModal 

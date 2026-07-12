@@ -17,7 +17,7 @@ const tripRoutes = require('./routes/tripRoutes');
 const maintenanceRoutes = require('./routes/maintenanceRoutes');
 const fuelLogRoutes = require('./routes/fuelLogRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
-// const dashboardRoutes = require('./routes/dashboardRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 // const reportRoutes = require('./routes/reportRoutes');
 
 app.post('/api/auth/login', login);
@@ -28,6 +28,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/fuel-logs', fuelLogRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

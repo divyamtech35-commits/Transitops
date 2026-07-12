@@ -47,7 +47,6 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Convert numerical values properly
     onSave({
       ...formData,
       maxLoad: parseInt(formData.maxLoad),
@@ -57,44 +56,53 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 overflow-y-auto pt-20 pb-10">
-      <div className="bg-[#121212] border border-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-6 m-4 mt-auto mb-auto">
-        <h2 className="text-2xl font-semibold mb-6 text-white">{vehicle ? 'Edit Vehicle' : 'Add New Vehicle'}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-6">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800">{vehicle ? 'Edit Vehicle' : 'Register New Vehicle'}</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Registration Number</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Registration Number</label>
             <input
               required
               type="text"
               name="registrationNumber"
               value={formData.registrationNumber}
               onChange={handleChange}
-              disabled={!!vehicle} // Registration number shouldn't be changed usually
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+              disabled={!!vehicle}
+              placeholder="e.g. MH-12-AB-1234"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium disabled:opacity-50"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Model</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Model</label>
             <input
               required
               type="text"
               name="model"
               value={formData.model}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              placeholder="e.g. Tata Prima 4025.S"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Type</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Type</label>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
               >
                 <option value="Truck">Truck</option>
                 <option value="Van">Van</option>
@@ -103,12 +111,12 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Status</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Status</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
               >
                 <option value="Available">Available</option>
                 <option value="On Trip">On Trip</option>
@@ -120,7 +128,7 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Max Load (kg)</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Max Load (kg)</label>
               <input
                 required
                 type="number"
@@ -128,11 +136,12 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
                 value={formData.maxLoad}
                 onChange={handleChange}
                 min="0"
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. 5000"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Odometer</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Odometer (km)</label>
               <input
                 required
                 type="number"
@@ -141,13 +150,14 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
                 onChange={handleChange}
                 min="0"
                 step="0.1"
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. 15000"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
           </div>
           
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Acquisition Cost</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Acquisition Cost ($)</label>
             <input
               required
               type="number"
@@ -156,21 +166,22 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
               onChange={handleChange}
               min="0"
               step="0.01"
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              placeholder="e.g. 45000"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+              className="px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-bold transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-amber-600 text-white hover:bg-amber-500 transition-colors"
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md shadow-amber-500/10"
             >
               {vehicle ? 'Update Vehicle' : 'Save Vehicle'}
             </button>

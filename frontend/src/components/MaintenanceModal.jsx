@@ -43,25 +43,32 @@ const MaintenanceModal = ({ isOpen, onClose, onSave, vehicles }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 overflow-y-auto pt-20 pb-10">
-      <div className="bg-[#121212] border border-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6 m-4 mt-auto mb-auto">
-        <h2 className="text-2xl font-semibold mb-6 text-white">Create Maintenance Log</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-6">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800">Create Maintenance Log</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-semibold leading-relaxed">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Vehicle (Available Only)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Vehicle (Available Only)</label>
             <select
               required
               name="vehicleId"
               value={formData.vehicleId}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
             >
               {vehicles.length === 0 ? <option value="">No vehicles available</option> : null}
               {vehicles.map(v => (
@@ -73,31 +80,31 @@ const MaintenanceModal = ({ isOpen, onClose, onSave, vehicles }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Description of Issue/Service</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Description of Issue/Service</label>
             <textarea
               required
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium resize-none"
               placeholder="E.g., Engine making noise, regular oil change, etc."
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-bold transition-all disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || vehicles.length === 0}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-amber-600 text-white hover:bg-amber-500 transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md shadow-amber-500/10 disabled:opacity-50"
             >
               {isSubmitting ? 'Creating...' : 'Send to Shop'}
             </button>

@@ -68,50 +68,59 @@ const TripModal = ({ isOpen, onClose, onSave, vehicles, drivers }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 overflow-y-auto pt-20 pb-10">
-      <div className="bg-[#121212] border border-gray-800 rounded-xl shadow-2xl w-full max-w-lg p-6 m-4 mt-auto mb-auto">
-        <h2 className="text-2xl font-semibold mb-6 text-white">Create New Trip (Draft)</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-6">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800">Create New Trip (Draft)</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-semibold leading-relaxed">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Source</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Source</label>
               <input
                 required
                 type="text"
                 name="source"
                 value={formData.source}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. Mumbai Port"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Destination</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Destination</label>
               <input
                 required
                 type="text"
                 name="destination"
                 value={formData.destination}
                 onChange={handleChange}
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. Pune Hub"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Vehicle (Available Only)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Vehicle (Available Only)</label>
             <select
               required
               name="vehicleId"
               value={formData.vehicleId}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
             >
               {vehicles.length === 0 ? <option value="">No vehicles available</option> : null}
               {vehicles.map(v => (
@@ -123,13 +132,13 @@ const TripModal = ({ isOpen, onClose, onSave, vehicles, drivers }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Driver (Available Only)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Driver (Available Only)</label>
             <select
               required
               name="driverId"
               value={formData.driverId}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-semibold cursor-pointer appearance-none"
             >
               {drivers.length === 0 ? <option value="">No drivers available</option> : null}
               {drivers.map(d => (
@@ -142,7 +151,7 @@ const TripModal = ({ isOpen, onClose, onSave, vehicles, drivers }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Cargo Weight (kg)</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Cargo Weight (kg)</label>
               <input
                 required
                 type="number"
@@ -151,11 +160,12 @@ const TripModal = ({ isOpen, onClose, onSave, vehicles, drivers }) => {
                 onChange={handleChange}
                 min="0"
                 step="0.1"
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. 2500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Planned Dist. (km)</label>
+              <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Planned Dist. (km)</label>
               <input
                 required
                 type="number"
@@ -164,36 +174,37 @@ const TripModal = ({ isOpen, onClose, onSave, vehicles, drivers }) => {
                 onChange={handleChange}
                 min="0"
                 step="0.1"
-                className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                placeholder="e.g. 150"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Planned Start Time</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Planned Start Time</label>
             <input
               required
               type="datetime-local"
               name="plannedStartTime"
               value={formData.plannedStartTime}
               onChange={handleChange}
-              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 [color-scheme:dark]"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-amber-600 focus:bg-white transition-all font-medium"
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-bold transition-all disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || vehicles.length === 0 || drivers.length === 0}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-amber-600 text-white hover:bg-amber-500 transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md shadow-amber-500/10 disabled:opacity-50"
             >
               {isSubmitting ? 'Creating...' : 'Create Trip'}
             </button>
