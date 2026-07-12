@@ -1,7 +1,11 @@
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, role, logout } = useAuth();
+
+  const canViewVehicles = role !== 'Driver';
+  const canViewDrivers = role !== 'Driver';
 
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8">
@@ -25,21 +29,27 @@ export default function Dashboard() {
         </header>
 
         <main>
-          <div className="bg-[#1a1a1a] border border-green-800/50 rounded-xl p-6 mb-6 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-            <h2 className="text-xl font-medium mb-1 text-green-400 flex items-center gap-2">
-              <span className="text-2xl">✓</span> Login Successful!
-            </h2>
-            <p className="text-gray-400">
-              Welcome back. You are successfully authenticated.
-            </p>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {canViewVehicles && (
+              <Link to="/vehicles" className="bg-[#1a1a1a] border border-gray-800 hover:border-amber-500/50 rounded-xl p-6 transition-all group">
+                <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Vehicles</h2>
+                <p className="text-gray-400">View and manage the fleet registry, track vehicle status and limits.</p>
+              </Link>
+            )}
 
-          <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-6">
-            <h2 className="text-xl font-medium mb-4">TransitOps Dashboard</h2>
-            <p className="text-gray-400">
-              Your access level is scoped to the <strong>{role}</strong> role. Navigation and features will be rendered below based on your permissions.
-            </p>
+            {canViewDrivers && (
+              <Link to="/drivers" className="bg-[#1a1a1a] border border-gray-800 hover:border-amber-500/50 rounded-xl p-6 transition-all group">
+                <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Drivers</h2>
+                <p className="text-gray-400">Manage driver profiles, licenses, and safety compliance records.</p>
+              </Link>
+            )}
+
+            <Link to="/trips" className="bg-[#1a1a1a] border border-gray-800 hover:border-amber-500/50 rounded-xl p-6 col-span-1 md:col-span-2 transition-all group">
+              <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Trips & Dispatch</h2>
+              <p className="text-gray-400">Manage operational trip lifecycles, assign available resources, and log completions.</p>
+            </Link>
+            
           </div>
         </main>
       </div>

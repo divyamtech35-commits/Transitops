@@ -3,6 +3,9 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Vehicles from './pages/Vehicles';
+import Drivers from './pages/Drivers';
+import Trips from './pages/Trips';
 
 function App() {
   return (
@@ -13,7 +16,9 @@ function App() {
           
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
-            {/* Future Protected Routes Here */}
+            <Route path="/vehicles" element={<Vehicles />} />
+            <Route path="/drivers" element={<Drivers />} />
+            <Route path="/trips" element={<Trips />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
