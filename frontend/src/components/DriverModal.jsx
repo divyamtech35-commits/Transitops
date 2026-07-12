@@ -7,7 +7,7 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
     licenseCategory: 'Standard',
     licenseExpiryDate: '',
     contactNumber: '',
-    safetyScore: 5.0,
+    safetyScore: 100,
     status: 'Available'
   });
 
@@ -20,7 +20,7 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
         // Appwrite returns datetime string, extract just the YYYY-MM-DD part for input type date
         licenseExpiryDate: driver.licenseExpiryDate ? driver.licenseExpiryDate.substring(0, 10) : '',
         contactNumber: driver.contactNumber || '',
-        safetyScore: driver.safetyScore || 5.0,
+        safetyScore: driver.safetyScore || 100,
         status: driver.status || 'Available'
       });
     } else {
@@ -30,7 +30,7 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
         licenseCategory: 'Standard',
         licenseExpiryDate: '',
         contactNumber: '',
-        safetyScore: 5.0,
+        safetyScore: 100,
         status: 'Available'
       });
     }
@@ -129,16 +129,16 @@ const DriverModal = ({ isOpen, onClose, onSave, driver }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Safety Score (1-5)</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Safety Score (0-100)</label>
               <input
                 required
                 type="number"
                 name="safetyScore"
                 value={formData.safetyScore}
                 onChange={handleChange}
-                min="1"
-                max="5"
-                step="0.1"
+                min="0"
+                max="100"
+                step="1"
                 className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
               />
             </div>

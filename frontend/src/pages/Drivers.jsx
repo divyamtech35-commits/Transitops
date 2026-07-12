@@ -116,8 +116,8 @@ const Drivers = () => {
                     <td className="px-6 py-4">{new Date(d.licenseExpiryDate).toLocaleDateString()}</td>
                     <td className="px-6 py-4">{d.contactNumber}</td>
                     <td className="px-6 py-4">
-                      <span className={`font-medium ${d.safetyScore >= 4 ? 'text-green-400' : d.safetyScore >= 3 ? 'text-amber-400' : 'text-red-400'}`}>
-                        {d.safetyScore} / 5.0
+                      <span className={`font-medium ${d.safetyScore >= 80 ? 'text-green-400' : d.safetyScore >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+                        {d.safetyScore} / 100
                       </span>
                     </td>
                     <td className="px-6 py-4">

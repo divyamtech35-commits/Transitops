@@ -18,7 +18,7 @@ const maintenanceRoutes = require('./routes/maintenanceRoutes');
 const fuelLogRoutes = require('./routes/fuelLogRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 // const dashboardRoutes = require('./routes/dashboardRoutes');
-// const reportRoutes = require('./routes/reportRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 app.post('/api/auth/login', login);
 app.get('/api/auth/me', verifyJWT, getCurrentUser);
@@ -28,6 +28,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/fuel-logs', fuelLogRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/reports', reportRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

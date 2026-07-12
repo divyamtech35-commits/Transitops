@@ -136,7 +136,7 @@ const dispatchTrip = async (req, res) => {
 const completeTrip = async (req, res) => {
   const db = getDbClient();
   const tripId = req.params.id;
-  const { finalOdometer, fuelConsumed } = req.body;
+  const { finalOdometer, fuelConsumed, revenue } = req.body;
 
   if (finalOdometer === undefined) {
     return res.status(400).json({ error: 'finalOdometer is required to complete a trip.' });
@@ -159,6 +159,7 @@ const completeTrip = async (req, res) => {
       completedAt: new Date().toISOString(),
       finalOdometer: parseFloat(finalOdometer),
       fuelConsumed: fuelConsumed ? parseFloat(fuelConsumed) : null,
+      revenue: revenue ? parseFloat(revenue) : 0,
       actualDistance: actualDistance > 0 ? actualDistance : 0
     });
 

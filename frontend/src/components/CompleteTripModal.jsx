@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 const CompleteTripModal = ({ isOpen, onClose, onSave, trip }) => {
   const [formData, setFormData] = useState({
     finalOdometer: '',
-    fuelConsumed: ''
+    fuelConsumed: '',
+    revenue: ''
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,7 +13,8 @@ const CompleteTripModal = ({ isOpen, onClose, onSave, trip }) => {
     if (isOpen && trip) {
       setFormData({
         finalOdometer: trip.initialOdometer || '',
-        fuelConsumed: ''
+        fuelConsumed: '',
+        revenue: ''
       });
       setError('');
       setIsSubmitting(false);
@@ -40,7 +42,8 @@ const CompleteTripModal = ({ isOpen, onClose, onSave, trip }) => {
       setIsSubmitting(true);
       await onSave(trip.$id, {
         finalOdometer: parseFloat(formData.finalOdometer),
-        fuelConsumed: formData.fuelConsumed ? parseFloat(formData.fuelConsumed) : null
+        fuelConsumed: formData.fuelConsumed ? parseFloat(formData.fuelConsumed) : null,
+        revenue: formData.revenue ? parseFloat(formData.revenue) : 0
       });
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to complete trip');
@@ -88,6 +91,21 @@ const CompleteTripModal = ({ isOpen, onClose, onSave, trip }) => {
               onChange={handleChange}
               min="0"
               step="0.1"
+              className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Trip Revenue (₹) - For ROI Calculation</label>
+            <input
+              required
+              type="number"
+              name="revenue"
+              value={formData.revenue}
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+              placeholder="0.00"
               className="w-full bg-[#1e1e1e] border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
             />
           </div>
