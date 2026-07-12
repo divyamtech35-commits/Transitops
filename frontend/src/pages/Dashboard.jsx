@@ -6,6 +6,7 @@ export default function Dashboard() {
 
   const canViewVehicles = role !== 'Driver';
   const canViewDrivers = role !== 'Driver';
+  const canViewMaintenance = role !== 'Driver';
 
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8">
@@ -49,6 +50,13 @@ export default function Dashboard() {
               <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Trips & Dispatch</h2>
               <p className="text-gray-400">Manage operational trip lifecycles, assign available resources, and log completions.</p>
             </Link>
+
+            {canViewMaintenance && (
+              <Link to="/maintenance" className="bg-[#1a1a1a] border border-gray-800 hover:border-amber-500/50 rounded-xl p-6 col-span-1 md:col-span-2 transition-all group">
+                <h2 className="text-xl font-medium mb-2 group-hover:text-amber-400 transition-colors">Maintenance Logs</h2>
+                <p className="text-gray-400">Track vehicle repairs, maintenance costs, and manage shop availability.</p>
+              </Link>
+            )}
             
           </div>
         </main>

@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
 import Trips from './pages/Trips';
+import Maintenance from './pages/Maintenance';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/vehicles" element={<Vehicles />} />
             <Route path="/drivers" element={<Drivers />} />
             <Route path="/trips" element={<Trips />} />
+            <Route path="/maintenance" element={<Maintenance />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
