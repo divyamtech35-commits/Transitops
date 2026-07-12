@@ -1,38 +1,54 @@
-const { client, teams, users } = require('../config/appwrite');
-const { APPWRITE_TEAM_ID } = process.env;
+const { Client, Account } = require('node-appwrite');
 
-async function verifyJWT(req, res, next) {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) {
-    return res.status(401).json({ error: true, message: 'Missing Authorization header' });
+const verifyJWT = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
   }
 
-  const jwt = header.split(' ')[1];
+  const token = authHeader.split(' ')[1];
 
   try {
-    client.setJWT(jwt);
-    const account = await users.get('me');
-    req.user = account;
+    // Initialize a scoped client with the user's JWT
+    const client = new Client()
+      .setEndpoint(process.env.APPWRITE_ENDPOINT)
+      .setProject(process.env.APPWRITE_PROJECT_ID)
+      .setJWT(token);
 
-    const memberships = await teams.listMemberships(APPWRITE_TEAM_ID);
-    const membership = memberships.memberships.find(
-      (m) => m.userId === account.$id
-    );
-    req.userRole = membership ? membership.roles[0] : null;
-
+    const account = new Account(client);
+    
+    // Fetch the user profile (this validates the JWT)
+    const user = await account.get();
+    
+    // Attach user to request object
+    req.user = user;
     next();
-  } catch (err) {
-    return res.status(401).json({ error: true, message: 'Invalid or expired token' });
+  } catch (error) {
+    console.error('JWT Verification Error:', error.message);
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
-}
+};
 
-function requireRole(...allowedRoles) {
+const requireRole = (allowedRoles) => {
   return (req, res, next) => {
-    if (!req.userRole || !allowedRoles.includes(req.userRole)) {
-      return res.status(403).json({ error: true, message: 'Insufficient permissions' });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized: User not found' });
     }
+
+    const userLabels = req.user.labels || [];
+    
+    // Check if the user has at least one of the allowed roles
+    const hasRole = allowedRoles.some((role) => userLabels.includes(role));
+
+    if (!hasRole) {
+      return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+    }
+
     next();
   };
-}
+};
 
-module.exports = { verifyJWT, requireRole };
+module.exports = {
+  verifyJWT,
+  requireRole,
+};

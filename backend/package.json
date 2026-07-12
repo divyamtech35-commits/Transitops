@@ -5,7 +5,9 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "node --watch src/app.js"
+    "dev": "node --watch src/app.js",
+    "setup:appwrite": "node scripts/setup-appwrite.js",
+    "seed:users": "node scripts/seed-users.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
