@@ -289,7 +289,7 @@ const FuelExpenses = () => {
                         <td className="px-6 py-4 font-bold text-slate-900">{getVehicleInfo(log.vehicleId)}</td>
                         <td className="px-6 py-4">{new Date(log.date).toLocaleDateString()}</td>
                         <td className="px-6 py-4">{log.liters?.toFixed(1)} L</td>
-                        <td className="px-6 py-4 text-right font-bold text-green-600">${log.cost?.toLocaleString()}</td>
+                        <td className="px-6 py-4 text-right font-bold text-green-600">₹{log.cost?.toLocaleString()}</td>
                       </tr>
                     ))
                   )}
@@ -340,11 +340,11 @@ const FuelExpenses = () => {
                         <tr key={row.id} className="hover:bg-slate-50/50 transition-colors">
                           <td className="px-6 py-4 font-bold text-slate-400">{getTripInfo(row.tripId)}</td>
                           <td className="px-6 py-4 font-bold text-slate-900">{getVehicleInfo(row.vehicleId)}</td>
-                          <td className="px-6 py-4">${row.toll?.toLocaleString()}</td>
-                          <td className="px-6 py-4">${row.other?.toLocaleString()}</td>
-                          <td className="px-6 py-4">${row.maint?.toLocaleString()}</td>
+                          <td className="px-6 py-4">₹{row.toll?.toLocaleString()}</td>
+                          <td className="px-6 py-4">₹{row.other?.toLocaleString()}</td>
+                          <td className="px-6 py-4">₹{row.maint?.toLocaleString()}</td>
                           <td className="px-6 py-4 text-right font-bold text-slate-800">
-                            ${row.total?.toLocaleString()}
+                            ₹{row.total?.toLocaleString()}
                           </td>
                         </tr>
                       ))
@@ -360,7 +360,7 @@ const FuelExpenses = () => {
                 Total Operational Fleet Expense (Fuel + Maintenance)
               </span>
               <span className="text-3xl font-extrabold text-amber-600">
-                ${totalOperationalCost?.toLocaleString()}
+                ₹{totalOperationalCost?.toLocaleString()}
               </span>
             </div>
           </div>

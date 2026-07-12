@@ -171,11 +171,11 @@ export default function Drivers() {
   // Display Role mapping
   const roleDisplayMap = {
     FleetManager: 'Fleet Manager',
-    Driver: 'Dispatcher',
+    Driver: 'Driver',
     SafetyOfficer: 'Safety Officer',
     FinancialAnalyst: 'Financial Analyst',
   };
-  const displayRole = roleDisplayMap[cleanRole] || role || 'Dispatcher';
+  const displayRole = roleDisplayMap[cleanRole] || role || 'Driver';
 
   if (loading) {
     return (

@@ -1,3 +1,5 @@
+const loginAttempts = {};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   const emailClean = email?.trim();
@@ -5,6 +7,13 @@ const login = async (req, res) => {
   const PROJECT_ID = process.env.APPWRITE_PROJECT_ID;
 
   try {
+    // Check if account is locked
+    if (loginAttempts[emailClean] && loginAttempts[emailClean].lockUntil > Date.now()) {
+      const remainingMs = loginAttempts[emailClean].lockUntil - Date.now();
+      const remainingMinutes = Math.ceil(remainingMs / 60000);
+      return res.status(429).json({ error: `Account locked due to too many failed attempts. Please try again after ${remainingMinutes} minute(s).` });
+    }
+
     // 1. Create a session to get the cookie
     const sessionRes = await fetch(`${ENDPOINT}/account/sessions/email`, {
       method: 'POST',
@@ -18,8 +27,25 @@ const login = async (req, res) => {
     if (!sessionRes.ok) {
       const err = await sessionRes.json();
       console.log('Appwrite rejected login:', err);
-      return res.status(sessionRes.status).json({ error: err.message || 'Invalid credentials' });
+
+      // Track failed attempt
+      if (!loginAttempts[emailClean]) {
+        loginAttempts[emailClean] = { attempts: 1, lockUntil: 0 };
+      } else {
+        loginAttempts[emailClean].attempts += 1;
+      }
+
+      if (loginAttempts[emailClean].attempts >= 5) {
+        loginAttempts[emailClean].lockUntil = Date.now() + 5 * 60 * 1000; // 5 minutes
+        return res.status(429).json({ error: 'Account locked due to too many failed attempts. Please try again after 5 minutes.' });
+      }
+
+      const remainingAttempts = 5 - loginAttempts[emailClean].attempts;
+      return res.status(sessionRes.status).json({ error: `Invalid credentials. You have ${remainingAttempts} attempt(s) remaining.` });
     }
+
+    // Reset attempts on successful login
+    delete loginAttempts[emailClean];
 
     const sessionCookie = sessionRes.headers.get('set-cookie');
 

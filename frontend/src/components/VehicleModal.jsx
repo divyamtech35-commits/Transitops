@@ -157,7 +157,7 @@ const VehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
           </div>
           
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Acquisition Cost ($)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Acquisition Cost (₹)</label>
             <input
               required
               type="number"

@@ -61,7 +61,7 @@ const CloseMaintenanceModal = ({ isOpen, onClose, onSave, log, vehicleName }) =>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Final Cost ($)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Final Cost (₹)</label>
             <input
               required
               type="number"

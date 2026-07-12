@@ -223,7 +223,7 @@ export default function Trips() {
     return result;
   }, [trips, statusFilter, searchQuery, sortBy, vehicles, drivers]);
 
-  const displayRole = cleanRole === 'FleetManager' ? 'Fleet Manager' : cleanRole === 'Driver' ? 'Dispatcher' : role;
+  const displayRole = cleanRole === 'FleetManager' ? 'Fleet Manager' : cleanRole === 'Driver' ? 'Driver' : role;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">

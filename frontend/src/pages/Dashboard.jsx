@@ -69,12 +69,12 @@ export default function Dashboard() {
   // Display Role mapping
   const roleDisplayMap = {
     FleetManager: 'Fleet Manager',
-    Driver: 'Dispatcher',
+    Driver: 'Driver',
     SafetyOfficer: 'Safety Officer',
     FinancialAnalyst: 'Financial Analyst',
   };
   const cleanRole = role ? role.replace(/\s+/g, '') : 'Driver';
-  const displayRole = roleDisplayMap[cleanRole] || role || 'Dispatcher';
+  const displayRole = roleDisplayMap[cleanRole] || role || 'Driver';
 
   // Filter and Search calculations for Recent Trips
   const filteredTrips = useMemo(() => {

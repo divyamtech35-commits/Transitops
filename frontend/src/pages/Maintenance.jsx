@@ -224,7 +224,7 @@ const Maintenance = () => {
                           </span>
                         </div>
                         {log.status === 'Closed' && (
-                          <div className="text-green-600 font-bold">${log.cost?.toFixed(2)}</div>
+                          <div className="text-green-600 font-bold">₹{log.cost?.toFixed(2)}</div>
                         )}
                       </td>
                       {canManageLogs && (

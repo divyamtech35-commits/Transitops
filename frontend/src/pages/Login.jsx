@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const [email, setEmail] = useState('driver@transitops.in');
   const [password, setPassword] = useState('password123');
-  const [role, setRole] = useState('Dispatcher'); // Visual helper selector
-  const [error, setError] = useState('');
+  const [role, setRole] = useState('Driver'); // Visual helper selector
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function Login() {
     if (selectedRole === 'Fleet Manager') {
       setEmail('fleet@transitops.in');
       setPassword('password123');
-    } else if (selectedRole === 'Dispatcher') {
+    } else if (selectedRole === 'Driver') {
       setEmail('driver@transitops.in');
       setPassword('password123');
     } else if (selectedRole === 'Safety Officer') {
@@ -30,14 +30,22 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError('Invalid credentials.');
+      const errMsg = err.response?.data?.error || err.message || 'Invalid credentials. Please try again.';
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: errMsg,
+        confirmButtonColor: '#eab308',
+        customClass: {
+          container: 'font-sans'
+        }
+      });
     } finally {
       setLoading(false);
     }
@@ -45,30 +53,30 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1c2431] font-['Inter',sans-serif] text-slate-800">
-      
+
       {/* LEFT SIDE: Dark Section */}
       <div className="md:w-[40%] bg-[#1c2431] text-white p-8 md:p-12 lg:p-16 flex flex-col justify-center select-none relative overflow-hidden min-h-[300px] md:min-h-screen">
         <div className="space-y-12">
           {/* Logo Section */}
           <div className="space-y-4">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shadow-lg rounded">
-              <rect width="40" height="40" rx="4" fill="#EAB308"/>
-              <circle cx="8" cy="8" r="2" fill="#1C2431"/>
-              <circle cx="16" cy="8" r="2" fill="#1C2431"/>
-              <circle cx="24" cy="8" r="2" fill="#1C2431"/>
-              <circle cx="32" cy="8" r="2" fill="#1C2431"/>
-              <circle cx="8" cy="16" r="2" fill="#1C2431"/>
-              <circle cx="16" cy="16" r="2" fill="#1C2431"/>
-              <circle cx="24" cy="16" r="2" fill="#1C2431"/>
-              <circle cx="32" cy="16" r="2" fill="#1C2431"/>
-              <circle cx="8" cy="24" r="2" fill="#1C2431"/>
-              <circle cx="16" cy="24" r="2" fill="#1C2431"/>
-              <circle cx="24" cy="24" r="2" fill="#1C2431"/>
-              <circle cx="32" cy="24" r="2" fill="#1C2431"/>
-              <circle cx="8" cy="32" r="2" fill="#1C2431"/>
-              <circle cx="16" cy="32" r="2" fill="#1C2431"/>
-              <circle cx="24" cy="32" r="2" fill="#1C2431"/>
-              <circle cx="32" cy="32" r="2" fill="#1C2431"/>
+              <rect width="40" height="40" rx="4" fill="#EAB308" />
+              <circle cx="8" cy="8" r="2" fill="#1C2431" />
+              <circle cx="16" cy="8" r="2" fill="#1C2431" />
+              <circle cx="24" cy="8" r="2" fill="#1C2431" />
+              <circle cx="32" cy="8" r="2" fill="#1C2431" />
+              <circle cx="8" cy="16" r="2" fill="#1C2431" />
+              <circle cx="16" cy="16" r="2" fill="#1C2431" />
+              <circle cx="24" cy="16" r="2" fill="#1C2431" />
+              <circle cx="32" cy="16" r="2" fill="#1C2431" />
+              <circle cx="8" cy="24" r="2" fill="#1C2431" />
+              <circle cx="16" cy="24" r="2" fill="#1C2431" />
+              <circle cx="24" cy="24" r="2" fill="#1C2431" />
+              <circle cx="32" cy="24" r="2" fill="#1C2431" />
+              <circle cx="8" cy="32" r="2" fill="#1C2431" />
+              <circle cx="16" cy="32" r="2" fill="#1C2431" />
+              <circle cx="24" cy="32" r="2" fill="#1C2431" />
+              <circle cx="32" cy="32" r="2" fill="#1C2431" />
             </svg>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">TransitOps</h1>
@@ -80,19 +88,6 @@ export default function Login() {
 
       {/* RIGHT SIDE: Light Section */}
       <div className="md:w-[60%] bg-white flex items-center justify-center p-8 md:p-16 lg:p-24 relative min-h-screen">
-        
-        {/* Absolute floating error card on desktop */}
-        {error && (
-          <div className="md:absolute md:right-8 lg:right-16 md:top-24 w-full md:w-64 border-2 border-dashed border-red-300 rounded-2xl p-4 bg-red-50 text-red-600 space-y-1 z-10 mb-6 md:mb-0">
-            <p className="text-xs font-bold text-red-500 uppercase tracking-wider">Error state</p>
-            <p className="text-sm font-semibold flex items-center gap-1.5">
-              <span>✕</span> {error}
-            </p>
-            <p className="text-[11px] text-red-400 mt-1 font-medium leading-relaxed">
-              Account locked after 5 failed attempts.
-            </p>
-          </div>
-        )}
 
         <div className="w-full max-w-md space-y-8">
           <div>
@@ -136,7 +131,7 @@ export default function Login() {
                 className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-900 transition-colors font-semibold appearance-none cursor-pointer"
               >
                 <option value="Fleet Manager">Fleet Manager</option>
-                <option value="Dispatcher">Dispatcher</option>
+                <option value="Driver">Driver</option>
                 <option value="Safety Officer">Safety Officer</option>
                 <option value="Financial Analyst">Financial Analyst</option>
               </select>

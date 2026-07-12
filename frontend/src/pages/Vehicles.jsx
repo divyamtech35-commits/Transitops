@@ -125,11 +125,11 @@ export default function Vehicles() {
   // Display Role mapping
   const roleDisplayMap = {
     FleetManager: 'Fleet Manager',
-    Driver: 'Dispatcher',
+    Driver: 'Driver',
     SafetyOfficer: 'Safety Officer',
     FinancialAnalyst: 'Financial Analyst',
   };
-  const displayRole = roleDisplayMap[cleanRole] || role || 'Dispatcher';
+  const displayRole = roleDisplayMap[cleanRole] || role || 'Driver';
 
   // Format capacity helper: e.g. 5000 -> 5 Ton, 500 -> 500 kg
   const formatCapacity = (maxLoad) => {
@@ -292,7 +292,7 @@ export default function Vehicles() {
                       <td className="px-6 py-4">{v.type}</td>
                       <td className="px-6 py-4 font-bold text-slate-800">{formatCapacity(v.maxLoad)}</td>
                       <td className="px-6 py-4 font-semibold">{v.odometer?.toLocaleString()}</td>
-                      <td className="px-6 py-4 font-semibold">${v.acquisitionCost?.toLocaleString()}</td>
+                      <td className="px-6 py-4 font-semibold text-green-600">₹{v.acquisitionCost?.toLocaleString()}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded text-[10px] font-bold ${statusColor}`}>
                           {v.status}
@@ -327,7 +327,7 @@ export default function Vehicles() {
 
       {/* RULE FOOTER TEXT */}
       <p className="text-amber-600 text-xs font-semibold mt-2">
-        Rule: Registration No. must be unique &middot; Retired/In Shop vehicles are hidden from Trip Dispatcher
+        Rule: Registration No. must be unique &middot; Retired/In Shop vehicles are hidden from Trip Assignment
       </p>
 
       <VehicleModal 
