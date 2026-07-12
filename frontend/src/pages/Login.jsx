@@ -47,8 +47,8 @@ export default function Login() {
     <div className="min-h-screen flex flex-col md:flex-row bg-[#1c2431] font-['Inter',sans-serif] text-slate-800">
       
       {/* LEFT SIDE: Dark Section */}
-      <div className="md:w-[40%] bg-[#1c2431] text-white p-8 md:p-12 lg:p-16 flex flex-col justify-between select-none relative overflow-hidden min-h-[300px] md:min-h-screen">
-        <div className="space-y-12 my-auto">
+      <div className="md:w-[40%] bg-[#1c2431] text-white p-8 md:p-12 lg:p-16 flex flex-col justify-center select-none relative overflow-hidden min-h-[300px] md:min-h-screen">
+        <div className="space-y-12">
           {/* Logo Section */}
           <div className="space-y-4">
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shadow-lg rounded">
@@ -75,31 +75,7 @@ export default function Login() {
               <p className="text-xs text-slate-400 font-medium tracking-wide mt-1">Smart Transport Operations Platform</p>
             </div>
           </div>
-
-          {/* Core Bullet points */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-300">One login, four roles:</h3>
-            <ul className="space-y-2.5 text-sm font-medium pl-1">
-              <li className="flex items-center gap-2">
-                <span className="text-amber-500 text-xs">●</span> Fleet Manager
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-amber-500 text-xs">●</span> Dispatcher
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-amber-500 text-xs">●</span> Safety Officer
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-amber-500 text-xs">●</span> Financial Analyst
-              </li>
-            </ul>
-          </div>
         </div>
-
-        {/* Footer */}
-        <p className="text-[10px] tracking-wider text-slate-500 font-bold mt-12 uppercase">
-          TransitOps &copy; 2026 - RBAC ENA1
-        </p>
       </div>
 
       {/* RIGHT SIDE: Light Section */}
@@ -166,8 +142,8 @@ export default function Login() {
               </select>
             </div>
 
-            {/* Checkbox and Forgot Link */}
-            <div className="flex items-center justify-between text-xs py-1">
+            {/* Checkbox */}
+            <div className="flex items-center text-xs py-1">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -176,7 +152,6 @@ export default function Login() {
                 />
                 <span className="text-slate-600 font-semibold">Remember me</span>
               </label>
-              <a href="#" className="text-blue-500 hover:text-blue-600 font-bold transition-colors">Forgot password?</a>
             </div>
 
             {/* Submit Button */}
@@ -188,17 +163,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Access Scope Info */}
-          <div className="pt-6 border-t border-slate-100 text-xs text-slate-400 space-y-2">
-            <p className="font-semibold text-slate-500">Access is scoped by role after login:</p>
-            <ul className="space-y-1 pl-1 text-[11px] text-slate-400">
-              <li>• Fleet Manager ➔ Fleet, Maintenance</li>
-              <li>• Dispatcher ➔ Dashboard, Trips</li>
-              <li>• Safety Officer ➔ Drivers, Compliance</li>
-              <li>• Financial Analyst ➔ Fuel & Expenses, Analytics</li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>
